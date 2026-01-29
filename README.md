@@ -149,8 +149,6 @@ Each workspace contains:
 - **Not collected:** No personally identifiable information, health, financial, or authentication data; no location or IP; no full browsing history (only tabs in your workspaces); no page content; no keystroke or click logging beyond what’s needed to run the extension.
 - **Permissions** (tabs, storage, bookmarks, scripting, host access, sidePanel, history, favicon) are used only to provide workspace management, sidebar display, and tab restoration. None are used to send data off your device or to track you.
 
-**Chrome Web Store:** Use this README as your privacy policy URL. If the repo is on GitHub, use your repo URL with `#privacy` (e.g. `https://github.com/yourusername/chrome-sidepanel#privacy`).
-
 ## Known issues
 
 - **Multi-window workspace switch:** When multiple browser windows are open, switching workspaces in one window can sometimes clear that workspace’s tabs.
