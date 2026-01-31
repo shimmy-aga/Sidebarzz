@@ -275,11 +275,17 @@ function applySidebarStyles(sidebar, settings) {
   const iconSize = Math.max(18, Math.min(48, s.width * 0.65)); // Scale icon size with width (18-48px)
   
   const accentColor = s.accentColor || '#007acc';
+  const panelBg = s.backgroundColor || '#252526';
+  const panelColor = s.iconTextColor || '#d4d4d4';
+  const panelBorder = s.borderColor || '#3e3e42';
   
   styleEl.textContent = `
     :root {
       --wm-accent-color: ${accentColor};
       --wm-sidebar-width: ${s.width}px;
+      --wm-panel-bg: ${panelBg};
+      --wm-panel-color: ${panelColor};
+      --wm-panel-border: ${panelBorder};
     }
     #workspace-manager-sidebar .wm-icon {
       width: ${iconSize}px !important;

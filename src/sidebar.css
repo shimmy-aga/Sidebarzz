@@ -439,7 +439,7 @@
   position: fixed !important;
   width: 100% !important;
   max-width: 800px !important;
-  background: #252526 !important;
+  background: var(--wm-panel-bg, #252526) !important;
   border-radius: 30px; /* fallback; JS applies s.borderRadius from settings */
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3) !important;
   z-index: 999998 !important;
@@ -450,7 +450,7 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
   font-size: 14px !important;
   line-height: 1.5 !important;
-  color: #d4d4d4 !important;
+  color: var(--wm-panel-color, #d4d4d4) !important;
   /* Position, top, height, border are set dynamically via JavaScript */
 }
 
@@ -461,7 +461,7 @@
   justify-content: space-between !important;
   align-items: center !important;
   padding: 20px !important;
-  border-bottom: 1px solid #3e3e42 !important;
+  border-bottom: 1px solid var(--wm-panel-border, #3e3e42) !important;
   flex-shrink: 0 !important;
 }
 
@@ -470,7 +470,7 @@
   font-size: 18px !important;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
   font-weight: 600 !important;
-  color: #d4d4d4 !important;
+  color: var(--wm-panel-color, #d4d4d4) !important;
   text-transform: none !important;
   letter-spacing: normal !important;
 }
@@ -478,7 +478,7 @@
 .wm-panel-close {
   background: none;
   border: none;
-  color: #d4d4d4;
+  color: var(--wm-panel-color, #d4d4d4);
   cursor: pointer;
   font-size: 24px;
   padding: 0;
@@ -502,7 +502,7 @@
 .wm-panel-section {
   margin-bottom: 28px;
   padding-bottom: 20px;
-  border-bottom: 1px solid rgba(62, 62, 66, 0.5);
+  border-bottom: 1px solid var(--wm-panel-border, #3e3e42);
 }
 
 .wm-panel-section:last-child {
