@@ -1,7 +1,7 @@
 {
   "name": "sidebarzz",
   "version": "0.1.0",
-  "description": "Chrome extension for workspace and bookmark management via side panel",
+  "description": "Chrome extension for workspace and bookmark management via injected sidebar",
   "author": "Shimmy",
   "scripts": {
     "build": "node build.js",
