@@ -18,16 +18,16 @@ const backgroundOptions = {
   format: 'iife'
 };
 
-// Sidepanel - can use ESM
-const sidepanelOptions = {
-  entryPoints: [path.join(rootDir, 'src/sidepanel.ts')],
+// Sidebar defaults boot - exposes storage defaults to content script (IIFE)
+const sidebarDefaultsOptions = {
+  entryPoints: [path.join(rootDir, 'src/sidebar-defaults-boot.ts')],
   bundle: true,
-  outfile: path.join(distDir, 'sidepanel.js'),
+  outfile: path.join(distDir, 'sidebar-defaults.js'),
   platform: 'browser',
   target: 'es2020',
   sourcemap: 'external',
   logLevel: 'info',
-  format: 'esm'
+  format: 'iife'
 };
 
 // Static assets: same filename in src/ and dist/
@@ -56,22 +56,6 @@ function syncDistAssets() {
       fs.copyFileSync(srcPath, path.join(distDir, name));
     }
   }
-  // Emit sidepanel.html (generated; paths for extension)
-  const sidepanelHtml = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sidebarzz</title>
-  <link rel="stylesheet" href="index.css">
-</head>
-<body>
-  <div id="sidepanel"></div>
-  <script src="sidepanel.js"></script>
-</body>
-</html>
-`;
-  fs.writeFileSync(path.join(distDir, 'sidepanel.html'), sidepanelHtml);
 }
 
 async function build() {
@@ -79,7 +63,7 @@ async function build() {
     syncDistAssets();
     await Promise.all([
       esbuild.build(backgroundOptions),
-      esbuild.build(sidepanelOptions)
+      esbuild.build(sidebarDefaultsOptions)
     ]);
     console.log('Build completed successfully');
   } catch (error) {
@@ -91,10 +75,10 @@ async function build() {
 if (isWatch) {
   Promise.all([
     esbuild.context(backgroundOptions),
-    esbuild.context(sidepanelOptions)
-  ]).then(([bgCtx, spCtx]) => {
+    esbuild.context(sidebarDefaultsOptions)
+  ]).then(([bgCtx, defaultsCtx]) => {
     bgCtx.watch();
-    spCtx.watch();
+    defaultsCtx.watch();
     console.log('Watching for changes...');
   });
 } else {

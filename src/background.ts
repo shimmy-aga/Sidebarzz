@@ -5,23 +5,9 @@ import { StorageService, Workspace } from './storage';
 
 console.log('Background service worker initialized');
 
-// Initialize side panel when extension is first loaded
 chrome.runtime.onInstalled.addListener(async () => {
   console.log('Extension installed');
-  
-  // Set up side panel
-  chrome.sidePanel.setOptions({
-    path: 'dist/sidepanel.html',
-    enabled: true
-  });
-
-  // Initialize default workspace if needed
   await StorageService.getWorkspaceData();
-});
-
-// Listen for side panel changes
-chrome.sidePanel.onPanelOpened?.addListener(() => {
-  console.log('Side panel opened');
 });
 
 // Handle browser close - save tabs for each workspace
@@ -30,22 +16,32 @@ chrome.runtime.onSuspend?.addListener(async () => {
   await saveAllWorkspaceTabs();
 });
 
-// Also listen for browser close via tabs API
-chrome.tabs.onRemoved.addListener(async () => {
-  // Debounce this to avoid too many writes
-  setTimeout(async () => {
-    await saveAllWorkspaceTabs();
-  }, 1000);
+let saveTabsTimeoutId: ReturnType<typeof setTimeout> | undefined;
+chrome.tabs.onRemoved.addListener((_tabId, removeInfo) => {
+  const windowId = removeInfo.windowId;
+  if (saveTabsTimeoutId) clearTimeout(saveTabsTimeoutId);
+  saveTabsTimeoutId = setTimeout(() => {
+    saveTabsTimeoutId = undefined;
+    saveAllWorkspaceTabs(windowId);
+  }, 800);
 });
 
-// Save tabs for current workspace (only the last-focused window so we don't mix windows)
-async function saveAllWorkspaceTabs(): Promise<void> {
+// Save tabs for current workspace. If windowId is given, save that window's tabs (or empty if
+// that window now has 0 tabs / was closed). Otherwise use last-focused window.
+async function saveAllWorkspaceTabs(windowIdFromRemoved?: number): Promise<void> {
   try {
     const data = await StorageService.getWorkspaceData();
     if (!data.currentWorkspaceId) return;
-    const win = await chrome.windows.getLastFocused({ populate: false }).catch(() => null);
-    const tabQuery = win?.id != null ? { windowId: win.id } : {};
-    const tabs = await chrome.tabs.query(tabQuery);
+    let tabs: chrome.tabs.Tab[];
+    if (windowIdFromRemoved != null) {
+      // Tab was removed from this window: query that window's tabs (may be 0 if last tab closed)
+      tabs = await chrome.tabs.query({ windowId: windowIdFromRemoved }).catch(() => []);
+    } else {
+      const win = await chrome.windows.getLastFocused({ populate: false }).catch(() => null);
+      const tabQuery = win?.id != null ? { windowId: win.id } : {};
+      tabs = await chrome.tabs.query(tabQuery);
+    }
+    // If we got 0 tabs (user closed last tab, or window closed), save empty so we don't restore
     await StorageService.saveClosedTabs(data.currentWorkspaceId, tabs);
   } catch (error) {
     console.error('Error saving workspace tabs:', error);
@@ -112,6 +108,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       });
     return true;
   }
+  return false;
 });
 
 async function handleWorkspaceSwitch(workspaceId: string, windowId?: number): Promise<void> {
@@ -182,31 +179,26 @@ async function replaceWindowTabsWithWorkspaceTabs(workspaceId: string, windowId?
     .map(tab => tab.id!);
 
   if (workspace.closedTabs && workspace.closedTabs.length > 0) {
-    // Create workspace's saved tabs first, then close old tabs
-    const existingUrls = new Set(currentTabs.map(tab => tab.url).filter(Boolean) as string[]);
-    let created = 0;
+    // Always replace window with exactly the workspace's saved tabs (don't skip "existing" URLs
+    // or we'd keep previous workspace's tab count when URLs match, e.g. 3× new tab -> 1× new tab).
     let activeTabId: number | undefined;
     for (const tab of workspace.closedTabs) {
-      if (tab.url && !existingUrls.has(tab.url)) {
+      if (tab.url && !tab.url.startsWith('chrome://') && !tab.url.startsWith('chrome-extension://')) {
         const createdTab = await chrome.tabs.create({ url: tab.url, active: false, windowId });
-        created++;
         if (tab.url === workspace.activeTabUrl) {
           activeTabId = createdTab.id;
         }
       }
     }
-    // Only close old tabs if we created at least one new tab, so we never leave the window with 0 tabs
-    if (tabsToClose.length > 0 && created > 0) {
+    if (tabsToClose.length > 0) {
       await chrome.tabs.remove(tabsToClose);
     }
-    // Focus the tab that was last active in this workspace (so it's focused + loaded when switching back)
     if (activeTabId != null) {
       await chrome.tabs.update(activeTabId, { active: true });
       if (windowId != null) {
         await chrome.windows.update(windowId, { focused: true });
       }
     } else if (workspace.activeTabUrl && windowId != null) {
-      // Active tab was already open (e.g. same URL); find it after close and focus
       const tabsInWindow = await chrome.tabs.query({ windowId });
       const tabToFocus = tabsInWindow.find(t => t.url === workspace.activeTabUrl);
       if (tabToFocus?.id) {

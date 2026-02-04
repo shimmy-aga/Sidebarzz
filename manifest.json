@@ -12,7 +12,6 @@
   "permissions": [
     "tabs",
     "storage",
-    "sidePanel",
     "favicon"
   ],
   "host_permissions": [
@@ -30,9 +29,6 @@
   "background": {
     "service_worker": "dist/background.js"
   },
-  "side_panel": {
-    "default_path": "dist/sidepanel.html"
-  },
   "options_page": "dist/options.html",
   "chrome_url_overrides": {
     "newtab": "dist/newtab.html"
@@ -40,7 +36,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["dist/content.js"],
+      "js": ["dist/sidebar-defaults.js", "dist/content.js"],
       "css": ["dist/sidebar.css"],
       "run_at": "document_idle",
       "all_frames": false
@@ -48,7 +44,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["dist/content.js", "dist/sidebar.css"],
+      "resources": ["dist/sidebar-defaults.js", "dist/content.js", "dist/sidebar.css"],
       "matches": ["<all_urls>"]
     },
     {

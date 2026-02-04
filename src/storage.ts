@@ -103,7 +103,17 @@ export interface WorkspaceData {
   currentWorkspaceId: string;
 }
 
-const DEFAULT_SETTINGS: WorkspaceSettings = {
+/** Preset themes for the injected sidebar. Single source of truth with content script (via sidebar-defaults-boot). */
+export const PRESET_THEMES: CustomTheme[] = [
+  { id: 'dark', name: 'Dark', backgroundColor: '#252526', iconBackgroundColor: '#2d2d2d', iconTextColor: '#d4d4d4', borderColor: '#3e3e42', accentColor: '#007acc' },
+  { id: 'light', name: 'Light', backgroundColor: '#ffffff', iconBackgroundColor: '#f3f3f3', iconTextColor: '#333333', borderColor: '#e0e0e0', accentColor: '#007acc' },
+  { id: 'blue', name: 'Blue', backgroundColor: '#1e3a5f', iconBackgroundColor: '#2a4a7a', iconTextColor: '#e0e8f0', borderColor: '#3a5a8a', accentColor: '#4a9eff' },
+  { id: 'green', name: 'Green', backgroundColor: '#1e3f1e', iconBackgroundColor: '#2a5a2a', iconTextColor: '#e0f0e0', borderColor: '#3a6a3a', accentColor: '#4aff4a' },
+  { id: 'purple', name: 'Purple', backgroundColor: '#3d1e3d', iconBackgroundColor: '#5a2a5a', iconTextColor: '#f0e0f0', borderColor: '#6a3a6a', accentColor: '#aa4aff' },
+  { id: 'orange', name: 'Orange', backgroundColor: '#3d2e1e', iconBackgroundColor: '#5a4a2a', iconTextColor: '#f0e8e0', borderColor: '#6a5a3a', accentColor: '#ff8a4a' }
+];
+
+export const DEFAULT_SETTINGS: WorkspaceSettings = {
   roundedCorners: true,
   marginFromSide: 0,
   marginTop: 0,
@@ -123,7 +133,9 @@ const DEFAULT_SETTINGS: WorkspaceSettings = {
   collapsed: false,
   onCloseBehavior: 'continue',
   defaultTabs: [],
-  iconPackId: 'minimalist' // Default to minimalist icon pack
+  iconPackId: 'minimalist',
+  themeId: 'dark',
+  customThemes: []
 };
 
 export class StorageService {

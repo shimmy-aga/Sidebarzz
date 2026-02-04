@@ -9,6 +9,7 @@
     "package:store": "node create-store-package.js"
   },
   "devDependencies": {
+    "@types/chrome": "^0.1.36",
     "esbuild": "^0.24.0"
   }
 }

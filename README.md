@@ -9,16 +9,16 @@
 </p>
 
 <p align="center">
-  <em>Sidebarzz does not use Chrome’s built-in side panel.</em>
+  <em>The only supported UI is the injected sidebar. Chrome’s built-in side panel is not used.</em>
 </p>
 
 ---
 
 ## Overview
 
-**Sidebarzz** is a Chrome extension for managing **workspaces, bookmarks, and tabs** using a sidebar injected directly into web pages. Each workspace is isolated, making it easy to separate work, personal, and project contexts.
+**Sidebarzz** is a Chrome extension for managing **workspaces, bookmarks, and tabs** using a **sidebar injected into every page**. Each workspace is isolated, making it easy to separate work, personal, and project contexts.
 
-The injected sidebar is the primary UI. Chrome’s native side panel is intentionally not used.
+The **injected sidebar** (content script + `sidebar.css`) is the **only supported UI**. There is no dependency on Chrome’s native side panel.
 
 ---
 
@@ -27,17 +27,17 @@ The injected sidebar is the primary UI. Chrome’s native side panel is intentio
 ```
 ├── dist/                # Runtime output
 │   ├── background.js    # Built from src/
-│   ├── sidepanel.js     # Built from src/
-│   ├── index.css        # Built from src/
-│   ├── sidepanel.html   # Generated during build
-│   ├── content.js       # Injected sidebar logic
-│   └── sidebar.css      # Injected sidebar styles
+│   ├── content.js      # Injected sidebar logic
+│   ├── sidebar.css      # Injected sidebar styles
+│   ├── popup.html/js    # Toolbar popup (toggle sidebar)
+│   ├── options.html/js  # Extension options
+│   └── ...
 │
 ├── src/                 # TypeScript / CSS sources
 │   ├── background.ts
-│   ├── sidepanel.ts
 │   ├── storage.ts
-│   └── icons.ts
+│   ├── content.js
+│   └── sidebar.css
 │
 ├── build.js
 ├── manifest.json
